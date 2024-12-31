@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>WCAG临近色</title>
+  <style>
+    /* 
+     * 全局样式设置
+     * Global styles setup
+     */
+    * {
+      box-sizing: border-box; /* 设置盒模型为 border-box */
+      margin: 0; /* 重置外边距 */
+      padding: 0; /* 重置内边距 */
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+                   Helvetica, Arial, sans-serif; /* 设置全局字体 */
+    }
+    /* 
+     * body样式
+     * Styles for the body
+     */
+    body {
+      background-color: #f5f5f7; /* 背景颜色 */
+      color: #333; /* 字体颜色 */
+      padding: 40px; /* 内边距 */
+      display: flex; /* 使用Flex布局 */
+      flex-direction: column; /* 垂直排列子元素 */
+      align-items: center; /* 水平居中对齐子元素 */
+    }
+    /* 
+     * 标题样式
+     * Styles for the h1 heading
+     */
+    h1 {
+      margin-bottom: 20px; /* 底部外边距 */
+      font-size: 1.5rem; /* 字体大小 */
+    }
+    /* 
+     * 容器样式
+     * Styles for the container
+     */
+    .container {
+      background-color: #ffffff; /* 背景颜色 */
+      width: 500px; /* 固定宽度 */
+      max-width: 90%; /* 最大宽度为视口的90% */
+      padding: 20px; /* 内边距 */
+      border-radius: 12px; /* 圆角 */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    }
+    /* 
+     * 表单组样式
+     * Styles for form groups
+     */
+    .form-group {
+      display: flex; /* 使用Flex布局 */
+      align-items: center; /* 垂直居中对齐 */
+      margin-bottom: 20px; /* 底部外边距 */
+    }
+    /* 
+     * 表单标签样式
+     * Styles for form labels
+     */
+    .form-group label {
+      width: 120px; /* 固定宽度 */
+      font-size: 0.95rem; /* 字体大小 */
+      color: #555; /* 字体颜色 */
+      margin-right: 10px; /* 右外边距 */
+    }
+    /* 
+     * 文本输入框样式
+     * Styles for text input fields
+     */
+    .form-group input[type="text"] {
+      flex: 1; /* 可伸缩宽度 */
+      padding: 8px; /* 内边距 */
+      border: 1px solid #ddd; /* 边框 */
+      border-radius: 8px; /* 圆角 */
+      font-size: 0.95rem; /* 字体大小 */
+    }
+    /* 
+     * 颜色选择器样式
+     * Styles for color input fields
+     */
+    .form-group input[type="color"] {
+      margin-left: 10px; /* 左外边距 */
+      width: 40px; /* 宽度 */
+      height: 40px; /* 高度 */
+      border: none; /* 无边框 */
+      background: none; /* 无背景 */
+    }
+    /* 
+     * 复选框组样式
+     * Styles for checkbox groups
+     */
+    .checkbox-group {
+      display: flex; /* 使用Flex布局 */
+      flex-direction: row; /* 水平排列子元素 */
+      gap: 20px; /* 子元素间距 */
+      margin-bottom: 20px; /* 底部外边距 */
+    }
+    /* 
+     * 复选框标签样式
+     * Styles for checkbox labels
+     */
+    .checkbox-group label {
+      display: flex; /* 使用Flex布局 */
+      align-items: center; /* 垂直居中对齐 */
+      cursor: pointer; /* 鼠标悬停时显示手型 */
+    }
+    /* 
+     * 复选框输入样式
+     * Styles for checkbox inputs
+     */
+    .checkbox-group label input[type="checkbox"] {
+      margin-right: 6px; /* 右外边距 */
+      /* 选中背景为黑色 */
+      /* Accent color set to black when checked */
+      accent-color: black;
+    }
+
+    /* 
+     * 按钮和圆形进度条样式
+     * Styles for buttons and circular progress rings
+     */
+    .button-wrapper {
+      position: relative; /* 相对定位 */
+      text-align: center; /* 文字居中 */
+    }
+    /* 
+     * 按钮样式
+     * Styles for the button
+     */
+    button {
+      background-color: #000; /* 背景颜色 */
+      color: #fff; /* 字体颜色 */
+      padding: 12px 24px; /* 内边距 */
+      border-radius: 24px; /* 圆角 */
+      border: none; /* 无边框 */
+      font-size: 1rem; /* 字体大小 */
+      cursor: pointer; /* 鼠标悬停时显示手型 */
+      outline: none; /* 无轮廓 */
+      position: relative; /* 相对定位 */
+    }
+    /* 
+     * 按钮加载状态样式
+     * Styles when the button is in loading state
+     */
+    /* 计算中按钮不可点时，“开始计算”文字隐藏，仅显示进度环 */
+    /* When loading, hide button text and show progress ring */
+    button[data-loading="true"] {
+      color: transparent; /* 隐藏文字 */
+      /* Hide text by making color transparent */
+    }
+    /* 
+     * 禁用按钮样式
+     * Styles for disabled buttons
+     */
+    button:disabled {
+      opacity: 1; /* 保持背景不变，以免和进度环冲突 */
+      /* Keep opacity to 1 to prevent conflict with progress ring */
+      cursor: not-allowed; /* 显示不可用光标 */
+    }
+    /* 
+     * 进度环样式
+     * Styles for the progress ring
+     */
+    .progress-ring {
+      width: 24px; /* 宽度 */
+      height: 24px; /* 高度 */
+      position: absolute; /* 绝对定位 */
+      top: 50%; /* 垂直居中 */
+      left: 50%; /* 水平居中 */
+      transform: translate(-50%, -50%); /* 精确居中 */
+      display: none; /* 默认隐藏 */
+      animation: spin 1s linear infinite; /* 旋转动画 */
+      z-index: 10; /* 确保旋转环在按钮文字之上 */
+    }
+    /* 
+     * 旋转动画关键帧
+     * Keyframes for the spin animation
+     */
+    @keyframes spin {
+      0%   { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    /* 
+     * 进度环的伪元素样式
+     * Styles for progress ring pseudo-elements
+     */
+    .progress-ring:before,
+    .progress-ring:after {
+      content: "";
+      position: absolute; /* 绝对定位 */
+      inset: 0; /* 填满父元素 */
+      border: 3px solid rgba(255,255,255,0.3); /* 边框样式 */
+      border-top-color: #fff; /* 顶部边框颜色 */
+      border-radius: 50%; /* 圆形 */
+    }
+
+    /* ======= 结果列表样式 ======= */
+    /* 
+     * 结果区域样式
+     * Styles for the results section
+     */
+    .results {
+      margin-top: 20px; /* 顶部外边距 */
+    }
+    /* 
+     * 颜色结果项样式
+     * Styles for each color result item
+     */
+    .color-result {
+      display: flex; /* 使用Flex布局 */
+      align-items: center; /* 垂直居中对齐 */
+      margin-bottom: 15px; /* 底部外边距 */
+      padding: 10px; /* 内边距 */
+      border-radius: 8px; /* 圆角 */
+      border: 1px solid #ddd; /* 边框 */
+    }
+    /* 
+     * 颜色预览样式
+     * Styles for the color preview box
+     */
+    .color-preview {
+      width: 40px; /* 宽度 */
+      height: 40px; /* 高度 */
+      border-radius: 8px; /* 圆角 */
+      margin-right: 10px; /* 右外边距 */
+      cursor: pointer; /* 鼠标悬停时显示手型 */
+    }
+    /* 
+     * 颜色信息样式
+     * Styles for the color information section
+     */
+    .color-info {
+      display: flex; /* 使用Flex布局 */
+      flex-direction: column; /* 垂直排列子元素 */
+    }
+    /* 
+     * 颜色信息文字样式
+     * Styles for text within color information
+     */
+    .color-info span {
+      margin-bottom: 4px; /* 底部外边距 */
+      font-size: 0.9rem; /* 字体大小 */
+    }
+    /* 
+     * 颜色代码样式
+     * Styles for the color code text
+     */
+    .color-code {
+      font-weight: 600; /* 字体加粗 */
+      cursor: pointer; /* 鼠标悬停时显示手型 */
+      text-decoration: underline; /* 下划线 */
+    }
+  </style>
+</head>
+<body>
+  <!-- 
+    主标题
+    Main heading
+  -->
+  <h1>计算符合WCAG AA/AAA标准的临近色</h1>
+  <div class="container">
+    <!-- ======= 用户输入颜色 ======= -->
+    <!-- 
+      用户输入颜色的表单组
+      Form group for user to input color
+    -->
+    <div class="form-group">
+      <label for="hexInput">输入HEX颜色：</label>
+      <!-- 
+        HEX颜色文本输入框
+        Text input for HEX color
+      -->
+      <input type="text" id="hexInput" placeholder="#FFFFFF" />
+      <!-- 
+        颜色选择器
+        Color picker input
+      -->
+      <input type="color" id="colorPicker" />
+    </div>
+
+    <!-- ======= 选择AA或AAA ======= -->
+    <!-- 
+      选择对比度标准的复选框组
+      Checkbox group to select contrast standards
+    -->
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" id="checkboxAA" />
+        AA 对比度(4.5:1)
+      </label>
+      <label>
+        <input type="checkbox" id="checkboxAAA" />
+        AAA 对比度(7:1)
+      </label>
+    </div>
+
+    <!-- ======= 计算按钮及进度条 ======= -->
+    <!-- 
+      计算按钮及其进度环的容器
+      Container for the calculate button and progress ring
+    -->
+    <div class="button-wrapper">
+      <!-- 
+        开始计算按钮
+        "Start Calculation" button
+      -->
+      <button id="calculateBtn">开始计算</button>
+      <!-- 
+        进度环，用于显示计算中的动画
+        Progress ring for showing loading animation
+      -->
+      <div class="progress-ring" id="progressRing"></div>
+    </div>
+
+    <!-- ======= 结果输出区域 ======= -->
+    <!-- 
+      显示计算结果的区域
+      Area to display calculation results
+    -->
+    <div class="results" id="results"></div>
+
+  </div>
+  <script>
+    /****************************************************
+     *              工具函数：颜色转换与对比度计算
+     *              Utility Functions: Color Conversion and Contrast Calculation
+     ****************************************************/
+
+    // 验证HEX颜色格式
+    // Validate HEX color format
+    function isValidHex(hex) {
+      return /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/.test(hex);
+    }
+
+    // HEX 转 RGB => 返回 { r, g, b }，范围 0-255
+    // Convert HEX to RGB => returns { r, g, b }, range 0-255
+    function hexToRgb(hex) {
+      hex = hex.replace("#", "");
+      if (hex.length === 3) {
+        // e.g. #fff => #ffffff
+        // Expand shorthand HEX to full form
+        hex = hex.split("").map((c) => c + c).join("");
+      }
+      const num = parseInt(hex, 16);
+      const r = (num >> 16) & 255;
+      const g = (num >> 8) & 255;
+      const b = num & 255;
+      return { r, g, b };
+    }
+
+    // RGB 转 HEX
+    // Convert RGB to HEX
+    function rgbToHex(r, g, b) {
+      const toHex = (v) => {
+        const h = v.toString(16);
+        return h.length === 1 ? "0" + h : h;
+      };
+      return "#" + toHex(r) + toHex(g) + toHex(b);
+    }
+
+    // 归一化到 [0,1] 并计算亮度 Luminance
+    // Normalize to [0,1] and calculate Luminance
+    // WCAG 规定: L = 0.2126*R + 0.7152*G + 0.0722*B (R/G/B 在 [0,1] )
+    // WCAG specifies: L = 0.2126*R + 0.7152*G + 0.0722*B (R/G/B in [0,1])
+    function getRelativeLuminance({ r, g, b }) {
+      function srgbToLinear(c) {
+        let c_ = c / 255;
+        return (c_ <= 0.03928)
+          ? (c_ / 12.92)
+          : Math.pow((c_ + 0.055) / 1.055, 2.4);
+      }
+      const R = srgbToLinear(r);
+      const G = srgbToLinear(g);
+      const B = srgbToLinear(b);
+      return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+    }
+
+    // 计算对比度 (亮度较高 + 0.05) / (亮度较低 + 0.05)
+    // Calculate contrast ratio: (brighter + 0.05) / (darker + 0.05)
+    function getContrast(hex1, hex2) {
+      const lum1 = getRelativeLuminance(hexToRgb(hex1));
+      const lum2 = getRelativeLuminance(hexToRgb(hex2));
+      const brighter = Math.max(lum1, lum2);
+      const darker = Math.min(lum1, lum2);
+      return (brighter + 0.05) / (darker + 0.05);
+    }
+
+    // sRGB => OKLab => OKLCH
+    // Convert sRGB to OKLab to OKLCH
+    function srgbToOklab({ r, g, b }) {
+      function srgbToLinear(c) {
+        let c_ = c / 255;
+        return (c_ <= 0.03928) ? (c_ / 12.92) : Math.pow((c_ + 0.055) / 1.055, 2.4);
+      }
+      const R = srgbToLinear(r);
+      const G = srgbToLinear(g);
+      const B = srgbToLinear(b);
+
+      // linear RGB => LMS
+      const l = 0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B;
+      const m = 0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B;
+      const s = 0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B;
+
+      // LMS => 非线性
+      // LMS to nonlinear space
+      const l_ = Math.cbrt(l);
+      const m_ = Math.cbrt(m);
+      const s_ = Math.cbrt(s);
+
+      // 非线性LMS => OkLab
+      // Nonlinear LMS to OkLab
+      const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
+      const a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
+      const b_ = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+      return { L, a, b: b_ };
+    }
+
+    // OkLab => sRGB
+    // Convert OkLab back to sRGB
+    function oklabToSrgb(Lab) {
+      const { L, a, b } = Lab;
+      const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+      const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+      const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+
+      const l = l_ * l_ * l_;
+      const m = m_ * m_ * m_;
+      const s = s_ * s_ * s_;
+
+      let R = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+      let G = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+      let B = -0.0045164051 * l - 0.0051874852 * m + 1.0092441680 * s;
+
+      // linear => sRGB
+      // Convert linear RGB to sRGB
+      function linearToSrgb(c) {
+        return (c <= 0.0031308)
+          ? 12.92 * c
+          : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+      }
+      R = linearToSrgb(R);
+      G = linearToSrgb(G);
+      B = linearToSrgb(B);
+
+      // Clamp values to [0,1] and convert to 0-255 range
+      R = Math.min(Math.max(R, 0), 1) * 255;
+      G = Math.min(Math.max(G, 0), 1) * 255;
+      B = Math.min(Math.max(B, 0), 1) * 255;
+
+      return { r: Math.round(R), g: Math.round(G), b: Math.round(B) };
+    }
+
+    // OkLab => OkLCH
+    // Convert OkLab to OkLCH
+    function oklabToOklch({ L, a, b }) {
+      const C = Math.sqrt(a * a + b * b);
+      let h = Math.atan2(b, a) * (180 / Math.PI);
+      if (h < 0) h += 360;
+      return { L, C, h };
+    }
+
+    // OkLCH => OkLab
+    // Convert OkLCH back to OkLab
+    function oklchToOklab({ L, C, h }) {
+      const hrad = (h * Math.PI) / 180;
+      const a = C * Math.cos(hrad);
+      const b = C * Math.sin(hrad);
+      return { L, a, b };
+    }
+
+    // HEX => OkLCH
+    // Convert HEX color to OkLCH
+    function hexToOklch(hex) {
+      const rgb = hexToRgb(hex);
+      const lab = srgbToOklab(rgb);
+      return oklabToOklch(lab);
+    }
+
+    // OkLCH => HEX
+    // Convert OkLCH back to HEX color
+    function oklchToHex(lch) {
+      const lab = oklchToOklab(lch);
+      const rgb = oklabToSrgb(lab);
+      return rgbToHex(rgb.r, rgb.g, rgb.b);
+    }
+
+    /**
+     * 在固定C, h 的情况下, 调整L 以尽量满足目标对比度
+     * Adjust L while keeping C and h fixed to meet target contrast as much as possible
+     * targetContrast 为 4.5 (AA) 或 7 (AAA)
+     * targetContrast is 4.5 (AA) or 7 (AAA)
+     * baseHex 为 #000000 或 #FFFFFF
+     * baseHex is #000000 or #FFFFFF
+     * 若找不到满足的颜色，则返回 null
+     * If no suitable color is found, return null
+     *
+     * === 修改点：加大搜索范围到 200 步 (0 ~ 1) ；不在首次找到就 break ===
+     * === Modification: Increase search range to 200 steps (0 ~ 1); do not break on first find ===
+     * 确保能找到最合适、且 contrast >= targetContrast 的颜色
+     * Ensure to find the most suitable color with contrast >= targetContrast
+     */
+    function findColorWithContrast(baseHex, originalOklch, targetContrast) {
+      const step = 0.005;       // 步长 Step size
+      let bestColor = null;    // 最佳颜色 Best color
+      let minDeltaL = Infinity; // 最小亮度差 Min luminance difference
+      const originalL = originalOklch.L; // 原始亮度 Original luminance
+
+      // 0..200 => 最大可搜索到 originalL + 200*0.005 = originalL+1.0 => 不超过1
+      // Loop through 200 steps to cover the full range
+      for (let i = 0; i <= 200; i++) {
+        // up
+        const upL = originalL + i * step;
+        if (upL >= 0 && upL <= 1) {
+          const colorUpHex = oklchToHex({ L: upL, C: originalOklch.C, h: originalOklch.h });
+          const contrastUp = getContrast(colorUpHex, baseHex);
+          if (contrastUp >= targetContrast) {
+            const deltaL = Math.abs(upL - originalL);
+            if (deltaL < minDeltaL) {
+              minDeltaL = deltaL;
+              bestColor = colorUpHex;
+            }
+          }
+        }
+        // down
+        if (i !== 0) {
+          const downL = originalL - i * step;
+          if (downL >= 0 && downL <= 1) {
+            const colorDownHex = oklchToHex({ L: downL, C: originalOklch.C, h: originalOklch.h });
+            const contrastDown = getContrast(colorDownHex, baseHex);
+            if (contrastDown >= targetContrast) {
+              const deltaL = Math.abs(downL - originalL);
+              if (deltaL < minDeltaL) {
+                minDeltaL = deltaL;
+                bestColor = colorDownHex;
+              }
+            }
+          }
+        }
+      }
+      return bestColor;
+    }
+
+    /****************************************************
+     *                    事件逻辑
+     *                    Event Logic
+     ****************************************************/
+
+    // 获取页面元素
+    // Get page elements by their IDs
+    const hexInput = document.getElementById("hexInput");
+    const colorPicker = document.getElementById("colorPicker");
+    const checkboxAA = document.getElementById("checkboxAA");
+    const checkboxAAA = document.getElementById("checkboxAAA");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const progressRing = document.getElementById("progressRing");
+    const resultsDiv = document.getElementById("results");
+
+    // 颜色选择器联动文本框
+    // Sync color picker with text input
+    colorPicker.addEventListener("input", () => {
+      hexInput.value = colorPicker.value;
+    });
+    // 同步文本框到颜色选择器
+    // Sync text input to color picker if HEX is valid
+    hexInput.addEventListener("input", () => {
+      if (isValidHex(hexInput.value)) {
+        colorPicker.value = hexInput.value;
+      }
+    });
+
+    // 点击“开始计算”按钮
+    // Click event for "Start Calculation" button
+    calculateBtn.addEventListener("click", () => {
+      const userHex = hexInput.value.trim().toLowerCase(); // 用户输入的HEX颜色
+      const needAA = checkboxAA.checked; // 是否需要AA对比度
+      const needAAA = checkboxAAA.checked; // 是否需要AAA对比度
+
+      // 校验输入
+      // Validate input
+      if (!isValidHex(userHex)) {
+        alert("请输入有效的HEX颜色代码，例如#FFFFFF");
+        // Alert user to enter a valid HEX color code, e.g., #FFFFFF
+        return;
+      }
+      if (!needAA && !needAAA) {
+        alert("请至少选择一个对比度目标 (AA或AAA)");
+        // Alert user to select at least one contrast target (AA or AAA)
+        return;
+      }
+
+      // 清空结果
+      // Clear previous results
+      resultsDiv.innerHTML = "";
+
+      // 显示进度条 + 禁用按钮 & 隐藏文字
+      // Show progress ring, disable button, and hide button text
+      progressRing.style.display = "block";
+      calculateBtn.disabled = true;
+      calculateBtn.dataset.loading = "true";
+
+      setTimeout(() => {
+        // 根据需求，输出固定数量的结果
+        // AA -> 2条 (对白、对黑)；AAA -> 2条 (对白、对黑)
+        // 同时勾选 -> 4条
+        // Depending on selection, prepare tasks
+        const tasks = [];
+        if (needAA) {
+          tasks.push({ label: "AA", contrast: 4.5, baseHex: "#FFFFFF", baseName: "白色" });
+          tasks.push({ label: "AA", contrast: 4.5, baseHex: "#000000", baseName: "黑色" });
+        }
+        if (needAAA) {
+          tasks.push({ label: "AAA", contrast: 7, baseHex: "#FFFFFF", baseName: "白色" });
+          tasks.push({ label: "AAA", contrast: 7, baseHex: "#000000", baseName: "黑色" });
+        }
+
+        const userOklch = hexToOklch(userHex); // 用户颜色转换为OkLCH
+        const outputColors = []; // 存储输出颜色
+
+        // 每个任务必输出一条结果
+        // For each task, ensure at least one result
+        for (const t of tasks) {
+          const { label, contrast, baseHex, baseName } = t;
+
+          const currentContrast = getContrast(userHex, baseHex); // 当前对比度
+          let usedHex = userHex; // 使用的颜色，默认用户输入的颜色
+          let suffixText = "(同输入色)"; // 后缀文字，表示使用的是输入色
+
+          // 如果输入色不满足要求，则寻找最接近的满足色
+          // If input color doesn't meet contrast, find the closest color that does
+          if (currentContrast < contrast) {
+            const foundHex = findColorWithContrast(baseHex, userOklch, contrast);
+            if (foundHex) {
+              usedHex = foundHex;
+              suffixText = ""; // 找到满足色后，取消后缀
+            } else {
+              // 若确实找不到，理论上不会发生，但做个降级
+              // If no suitable color is found, which shouldn't happen, fallback
+              usedHex = userHex; 
+              suffixText = "(无可用颜色,仅显示输入色)";
+              // "(No available color, only showing input color)"
+            }
+          }
+
+          // 添加到输出颜色数组
+          // Add the result to the output colors array
+          outputColors.push({
+            color: usedHex,
+            contrast: getContrast(usedHex, baseHex).toFixed(2) + ":1",
+            text: `与${baseName}符合${label}标准` + (suffixText ? " " + suffixText : "")
+            // "Meets ${label} standard with ${baseName}" + suffix
+          });
+        }
+
+        // 如果完全找不到任何结果（理论上不会发生），则提示
+        // If no results found, alert the user
+        if (outputColors.length === 0) {
+          alert("无法找到符合目标对比度的颜色");
+          // "Unable to find a color that meets the target contrast"
+        } else {
+          // 渲染结果
+          // Render the results
+          outputColors.forEach((item) => {
+            const div = document.createElement("div");
+            div.className = "color-result";
+
+            // 创建颜色预览元素
+            // Create the color preview element
+            const preview = document.createElement("div");
+            preview.className = "color-preview";
+            preview.style.backgroundColor = item.color;
+            div.appendChild(preview);
+
+            // 创建颜色信息容器
+            // Create the color information container
+            const info = document.createElement("div");
+            info.className = "color-info";
+
+            // 创建颜色代码元素
+            // Create the color code element
+            const codeSpan = document.createElement("span");
+            codeSpan.innerHTML = `颜色代码：<span class="color-code">${item.color}</span>`;
+            info.appendChild(codeSpan);
+
+            // 创建对比度信息元素
+            // Create the contrast information element
+            const contrastSpan = document.createElement("span");
+            contrastSpan.textContent = `对比度：${item.contrast}`;
+            info.appendChild(contrastSpan);
+
+            // 创建描述文字元素
+            // Create the descriptive text element
+            const textSpan = document.createElement("span");
+            textSpan.textContent = item.text;
+            info.appendChild(textSpan);
+
+            div.appendChild(info);
+            resultsDiv.appendChild(div);
+
+            // 点击复制HEX
+            // Add click event to copy HEX code
+            codeSpan.addEventListener("click", () => {
+              navigator.clipboard.writeText(item.color).then(() => {
+                alert(`已复制：${item.color}`);
+                // "Copied: ${item.color}"
+              });
+            });
+            // 点击颜色预览复制HEX
+            // Add click event to color preview to copy HEX code
+            preview.addEventListener("click", () => {
+              navigator.clipboard.writeText(item.color).then(() => {
+                alert(`已复制：${item.color}`);
+                // "Copied: ${item.color}"
+              });
+            });
+          });
+        }
+
+        // 计算结束，隐藏进度条 + 恢复按钮
+        // Calculation finished, hide progress ring and enable button
+        progressRing.style.display = "none";
+        calculateBtn.disabled = false;
+        calculateBtn.dataset.loading = "false";
+      }, 200); // 模拟异步延迟
+      // Simulate asynchronous delay
+    });
+  </script>
+</body>
+</html>
