@@ -2,9 +2,9 @@
 
 ## 项目简介 / Project Overview
 
-**A11Y Color Finder** 是一个网页工具，用于根据 [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) AA 和 AAA 标准，找到最接近输入颜色且符合对比度要求的颜色。通过输入一个 HEX 颜色代码，用户可以快速获取与白色或黑色具有足够对比度的临近色，确保文本和背景的可读性。
+**A11Y Color Finder** 是一个基于OKLCH色彩模型的网页工具，用于根据 [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) AA 和 AAA 标准，找到最接近输入颜色且符合对比度要求的颜色。通过输入一个 HEX 颜色代码，用户可以快速获取与白色或黑色具有足够对比度的颜色，确保文本和背景的可读性。
 
-**A11Y Color Finder** is a web tool designed to find the closest color to the input that complies with [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) AA and AAA standards. By entering a HEX color code, users can quickly obtain adjacent colors that have sufficient contrast with white or black, ensuring the readability of text against backgrounds.
+**A11Y Color Finder** is a web tool based on the OKLCH color model, designed to find the closest color to the input that complies with [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) AA and AAA standards. By entering a HEX color code, users can quickly obtain colors that have sufficient contrast with white or black, ensuring the readability of text against backgrounds.
 
 ---
 
