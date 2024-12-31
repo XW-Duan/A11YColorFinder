@@ -25,33 +25,21 @@
 ---
 
 ## 安装 / Installation
-
-1. **克隆仓库 / Clone the Repository**
-
-   ```bash
-   git clone https://github.com/XW-Duan/A11YColorFinder.git
-
-	2.	导航到项目目录 / Navigate to the Project Directory
-
-cd A11YColorFinder
-
-
-	3.	打开 index.html 文件 / Open the index.html File
 直接在浏览器中打开 index.html 文件即可使用，无需额外安装。
 Simply open the index.html file in your browser to use the tool without any additional installation.
 
 使用方法 / Usage
-	1.	输入颜色 / Enter a Color
+1.输入颜色 / Enter a Color
 在文本框中输入一个有效的 HEX 颜色代码（例如 #FFFFFF），或者使用右侧的颜色选择器选择颜色。
 Enter a valid HEX color code (e.g., #FFFFFF) in the text box or use the color picker on the right to select a color.
-	2.	选择对比度标准 / Select Contrast Standards
+2.选择对比度标准 / Select Contrast Standards
 勾选 AA 对比度 (4.5:1) 和/或 AAA 对比度 (7:1)，根据需要选择。
 Check AA Contrast (4.5:1) and/or AAA Contrast (7:1) based on your requirements.
-	3.	开始计算 / Start Calculation
+3.开始计算 / Start Calculation
 点击 开始计算 按钮，工具将自动计算并显示最接近输入颜色且符合选定对比度标准的临近色。
 Click the Start Calculation button to automatically compute and display the closest adjacent colors that meet the selected contrast standards.
-	4.	查看结果 / View Results
+4.查看结果 / View Results
 计算完成后，结果区域将显示符合条件的颜色预览、HEX 代码和对比度比例。点击颜色代码或预览可以复制 HEX 代码。
 After calculation, the results section will display color previews, HEX codes, and contrast ratios that meet the criteria. Click on the HEX code or preview to copy the HEX code.
-
-### 项目编码由ChatGPT完成
+ 
+项目编码由ChatGPT完成和注释，人工仅设计了算法逻辑并提出需求prompt
